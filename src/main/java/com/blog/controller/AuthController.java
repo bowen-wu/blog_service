@@ -1,15 +1,16 @@
 package com.blog.controller;
 
 import com.blog.entity.AuthResponse;
-import com.blog.entity.ResponseStatus;
+import com.blog.entity.Response;
 import com.blog.service.AuthService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 @RestController
 public class AuthController {
@@ -28,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     @ResponseBody
-    public AuthResponse login(@RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
-        return this.authService.login(username, password);
+    public Response login(@RequestBody Map<String, String> params) {
+        return this.authService.login(params.get("username"), params.get("password"));
     }
 }
