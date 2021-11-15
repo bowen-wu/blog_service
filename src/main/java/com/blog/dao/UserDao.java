@@ -1,5 +1,6 @@
 package com.blog.dao;
 
+import com.blog.entity.AuthResponse;
 import com.blog.entity.User;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Component;
