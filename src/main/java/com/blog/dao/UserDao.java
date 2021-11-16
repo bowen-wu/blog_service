@@ -5,6 +5,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 
 @Component
 public class UserDao {
@@ -19,7 +20,10 @@ public class UserDao {
         return this.sqlSession.selectOne("selectUserById", id);
     }
 
-    public int insertUser(String username, String password) {
-        return this.sqlSession.insert("insertUser", new String[]{username, password});
+    public int insertUser(String username, String encryptedPassword) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("encryptedPassword", encryptedPassword);
+        return this.sqlSession.insert("insertUser", params);
     }
 }

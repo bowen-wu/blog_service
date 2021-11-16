@@ -8,8 +8,8 @@
         from user
         where id = #{id}
     </select>
-    <insert id="insertUser">
-        insert into user (username, password, avatar, created_at, updated_at)
-        values (#{username}, #{password}, '', now(), now());
+    <insert id="insertUser" parameterType="java.util.Map">
+        insert into user (username, encrypted_password, avatar, created_at, updated_at)
+        values (#{username}, #{encryptedPassword}, '', now(), now());
     </insert>
 </mapper>
