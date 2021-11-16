@@ -2,12 +2,10 @@ package com.blog.controller;
 
 import com.blog.entity.AuthResponse;
 import com.blog.entity.Response;
-import com.blog.entity.ResponseStatus;
 import com.blog.entity.User;
 import com.blog.service.AuthService;
 import com.blog.service.UserService;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,13 +48,13 @@ public class AuthController {
         String username = params.get("username");
         String password = params.get("password");
         if (username == null || password == null) {
-            return new Response(ResponseStatus.fail, "用户名|密码为空");
+            return Response.failure("用户名|密码为空");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return new Response(ResponseStatus.fail, "用户名长度 1 - 15 个字符");
+            return Response.failure("用户名长度 1 - 15 个字符");
         }
         if (password.length() < 6 || password.length() > 16) {
-            return new Response(ResponseStatus.fail, "密码长度 6 - 16 个字符");
+            return Response.failure("密码长度 6 - 16 个字符");
         }
 
         try {
@@ -65,9 +63,9 @@ public class AuthController {
             int id = userService.register(user);
             user.setId(id);
             login(params);
-            return new AuthResponse(ResponseStatus.ok, "注册成功", false, user);
+            return AuthResponse.success("注册成功", false, user);
         } catch (DuplicateKeyException e) {
-            return new Response(ResponseStatus.fail, "该用户名已经注册");
+            return Response.failure("该用户名已经注册");
         }
     }
 

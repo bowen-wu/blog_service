@@ -4,10 +4,8 @@ public class AuthResponse extends Response {
     boolean isLogin;
     User data;
 
-    public AuthResponse(ResponseStatus status, String msg, boolean isLogin) {
-        super(status, msg);
-        this.isLogin = isLogin;
-        this.data = null;
+    public static AuthResponse success(String msg, boolean isLogin, User user) {
+        return new AuthResponse(ResponseStatus.ok, msg, isLogin, user);
     }
 
     public AuthResponse(ResponseStatus status, String msg, boolean isLogin, User data) {

@@ -4,6 +4,14 @@ public class Response {
     ResponseStatus status;
     String msg;
 
+    public static Response failure(String msg) {
+        return new Response(ResponseStatus.fail, msg);
+    }
+
+    public static Response success(String msg) {
+        return new Response(ResponseStatus.ok, msg);
+    }
+
     public Response(ResponseStatus status, String msg) {
         this.status = status;
         this.msg = msg;

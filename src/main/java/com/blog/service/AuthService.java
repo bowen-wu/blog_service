@@ -3,7 +3,6 @@ package com.blog.service;
 import com.blog.dao.UserDao;
 import com.blog.entity.AuthResponse;
 import com.blog.entity.Response;
-import com.blog.entity.ResponseStatus;
 import com.blog.entity.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -33,10 +32,10 @@ public class AuthService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userDao.getUserByUsername(username);
         if (user == null) {
-            return new AuthResponse(ResponseStatus.ok, "", false);
+            return AuthResponse.success("", false, null);
         }
 
-        return new AuthResponse(ResponseStatus.ok, "", true, user);
+        return AuthResponse.success("", true, user);
     }
 
     public Response login(String username, String password) {
@@ -44,7 +43,7 @@ public class AuthService {
         try {
             userDetails = this.userDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return new Response(ResponseStatus.fail, "用户不存在");
+            return Response.failure("用户不存在");
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
@@ -53,9 +52,9 @@ public class AuthService {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            return new AuthResponse(ResponseStatus.ok, "登录成功", true, userDao.getUserByUsername(username));
+            return AuthResponse.success("登录成功", true, userDao.getUserByUsername(username));
         } catch (BadCredentialsException e) {
-            return new Response(ResponseStatus.fail, "密码不正确");
+            return Response.failure("密码不正确");
         }
     }
 
@@ -63,10 +62,10 @@ public class AuthService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userDao.getUserByUsername(username);
         if (user == null) {
-            return new Response(ResponseStatus.fail, "用户尚未登录");
+            return Response.failure("用户尚未登录");
         } else {
             SecurityContextHolder.clearContext();
-            return new Response(ResponseStatus.ok, "注销成功");
+            return Response.success("注销成功");
         }
     }
 }
