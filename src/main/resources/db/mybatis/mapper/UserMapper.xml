@@ -12,4 +12,7 @@
         insert into user (username, encrypted_password, avatar, created_at, updated_at)
         values (#{username}, #{encryptedPassword}, '', now(), now());
     </insert>
+    <select id="selectUserByUsername" resultType="com.blog.entity.User">
+        select * from user where username = #{username}
+    </select>
 </mapper>

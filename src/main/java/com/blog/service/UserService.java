@@ -38,13 +38,13 @@ public class UserService implements UserDetailsService {
         return new AuthResponse(ResponseStatus.ok, "注册成功", false, user);
     }
 
-    public String getPasswordByUsername(String username) {
-        return "";
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String encodedPassword = bCryptPasswordEncoder.encode(getPasswordByUsername(username));
-        return new org.springframework.security.core.userdetails.User(username, encodedPassword, Collections.emptyList());
+        User user = userDao.getUserByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username + " 不存在！");
+        }
+
+        return new org.springframework.security.core.userdetails.User(username, user.getEncryptedPassword(), Collections.emptyList());
     }
 }

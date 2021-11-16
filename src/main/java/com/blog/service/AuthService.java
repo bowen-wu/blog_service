@@ -1,5 +1,6 @@
 package com.blog.service;
 
+import com.blog.dao.UserDao;
 import com.blog.entity.AuthResponse;
 import com.blog.entity.Response;
 import com.blog.entity.ResponseStatus;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -19,11 +21,13 @@ import javax.inject.Inject;
 public class AuthService {
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
+    private final UserDao userDao;
 
     @Inject
-    public AuthService(UserDetailsService userDetailsService, AuthenticationManager authenticationManager) {
+    public AuthService(UserDetailsService userDetailsService, AuthenticationManager authenticationManager, UserDao userDao) {
         this.userDetailsService = userDetailsService;
         this.authenticationManager = authenticationManager;
+        this.userDao = userDao;
     }
 
     public AuthResponse getLoginStatus() {
@@ -45,8 +49,7 @@ public class AuthService {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            User loggedInUser = new User(1, "张三");
-            return new AuthResponse(ResponseStatus.ok, "登录成功", true, loggedInUser);
+            return new AuthResponse(ResponseStatus.ok, "登录成功", true, userDao.getUserByUsername(username));
         } catch (BadCredentialsException e) {
             return new Response(ResponseStatus.fail, "密码不正确");
         }

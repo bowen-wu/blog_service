@@ -20,6 +20,10 @@ public class UserDao {
         return this.sqlSession.selectOne("selectUserById", id);
     }
 
+    public User getUserByUsername(String username) {
+        return this.sqlSession.selectOne("selectUserByUsername", username);
+    }
+
     public int insertUser(String username, String encryptedPassword) {
         HashMap<String, String> params = new HashMap<>();
         params.put("username", username);

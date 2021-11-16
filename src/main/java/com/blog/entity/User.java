@@ -27,12 +27,12 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public String getPassword() {
+    public String getEncryptedPassword() {
         return encryptedPassword;
     }
 
-    public void setPassword(String password) {
-        this.encryptedPassword = password;
+    public void setEncryptedPassword(String encryptedPassword) {
+        this.encryptedPassword = encryptedPassword;
     }
 
     public Integer getId() {
