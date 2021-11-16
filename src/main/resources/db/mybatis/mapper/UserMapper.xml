@@ -8,9 +8,9 @@
         from user
         where id = #{id}
     </select>
-    <insert id="insertUser" parameterType="java.util.Map">
+    <insert id="insertUser" parameterType="java.util.Map" keyProperty="id" useGeneratedKeys="true">
         insert into user (username, encrypted_password, avatar, created_at, updated_at)
-        values (#{username}, #{encryptedPassword}, #{avatar}, #{createdAt}, #{updatedAt});
+        values (#{username}, #{encryptedPassword}, #{avatar}, #{createdAt}, #{updatedAt})
     </insert>
     <select id="selectUserByUsername" resultType="com.blog.entity.User">
         select *

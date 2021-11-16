@@ -5,7 +5,6 @@ import com.blog.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -24,12 +23,8 @@ public class UserService implements UserDetailsService {
         return this.userDao.selectUserById(id);
     }
 
-    public int register(User user) {
-        return userDao.insertUser(user);
-    }
-
-    public User getUserByUsername(String username) {
-        return userDao.getUserByUsername(username);
+    public void register(User user) {
+        userDao.insertUser(user);
     }
 
     @Override

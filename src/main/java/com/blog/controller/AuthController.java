@@ -60,8 +60,7 @@ public class AuthController {
         try {
             String encodePassword = bCryptPasswordEncoder.encode(password);
             User user = new User(null, username, encodePassword, "", Instant.now(), Instant.now());
-            int id = userService.register(user);
-            user.setId(id);
+            userService.register(user);
             login(params);
             return AuthResponse.success("注册成功", false, user);
         } catch (DuplicateKeyException e) {
