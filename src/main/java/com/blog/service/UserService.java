@@ -31,11 +31,13 @@ public class UserService implements UserDetailsService {
         return this.userDao.selectUserById(id);
     }
 
-    public Response register(String username, String password) {
+    public User register(String username, String password) {
+        if (userDao.getUserByUsername(username) != null) {
+            return null;
+        }
         String encodePassword = bCryptPasswordEncoder.encode(password);
-        int userId = this.userDao.insertUser(username, encodePassword);
-        User user = getUserById(userId);
-        return new AuthResponse(ResponseStatus.ok, "注册成功", false, user);
+        userDao.insertUser(username, encodePassword);
+        return userDao.getUserByUsername(username);
     }
 
     @Override
