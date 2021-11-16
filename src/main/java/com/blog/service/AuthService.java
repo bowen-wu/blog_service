@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -31,8 +30,13 @@ public class AuthService {
     }
 
     public AuthResponse getLoginStatus() {
-        // 用 cookie 换 user，如果有 user 则 已经登录，如果没有 user，则 没有登录
-        return new AuthResponse(ResponseStatus.ok, "", false);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userDao.getUserByUsername(username);
+        if (user == null) {
+            return new AuthResponse(ResponseStatus.ok, "", false);
+        }
+
+        return new AuthResponse(ResponseStatus.ok, "", true, user);
     }
 
     public Response login(String username, String password) {
