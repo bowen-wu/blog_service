@@ -1,11 +1,7 @@
 package com.blog.service;
 
 import com.blog.dao.UserDao;
-import com.blog.entity.AuthResponse;
-import com.blog.entity.Response;
-import com.blog.entity.ResponseStatus;
 import com.blog.entity.User;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,17 +9,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.Collections;
 
 @Service
 public class UserService implements UserDetailsService {
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDao userDao;
 
     @Inject
-    public UserService(BCryptPasswordEncoder bCryptPasswordEncoder, UserDao userDao) {
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    public UserService(UserDao userDao) {
         this.userDao = userDao;
     }
 
@@ -31,12 +24,11 @@ public class UserService implements UserDetailsService {
         return this.userDao.selectUserById(id);
     }
 
-    public User register(String username, String password) {
-        if (userDao.getUserByUsername(username) != null) {
-            return null;
-        }
-        String encodePassword = bCryptPasswordEncoder.encode(password);
-        userDao.insertUser(username, encodePassword);
+    public int register(User user) {
+        return userDao.insertUser(user);
+    }
+
+    public User getUserByUsername(String username) {
         return userDao.getUserByUsername(username);
     }
 

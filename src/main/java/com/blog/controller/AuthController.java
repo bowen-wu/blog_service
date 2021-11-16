@@ -6,6 +6,9 @@ import com.blog.entity.ResponseStatus;
 import com.blog.entity.User;
 import com.blog.service.AuthService;
 import com.blog.service.UserService;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,19 +16,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.Map;
 
 @RestController
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Inject
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.authService = authService;
         this.userService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
-
 
     @GetMapping("/auth")
     @ResponseBody
@@ -54,12 +59,16 @@ public class AuthController {
             return new Response(ResponseStatus.fail, "密码长度 6 - 16 个字符");
         }
 
-        User user = this.userService.register(username, password);
-        if (user == null) {
+        try {
+            String encodePassword = bCryptPasswordEncoder.encode(password);
+            User user = new User(null, username, encodePassword, "", Instant.now(), Instant.now());
+            int id = userService.register(user);
+            user.setId(id);
+            login(params);
+            return new AuthResponse(ResponseStatus.ok, "注册成功", false, user);
+        } catch (DuplicateKeyException e) {
             return new Response(ResponseStatus.fail, "该用户名已经注册");
         }
-        login(params);
-        return new AuthResponse(ResponseStatus.ok, "注册成功", false, user);
     }
 
     @GetMapping("/auth/logout")

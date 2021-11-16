@@ -10,9 +10,11 @@
     </select>
     <insert id="insertUser" parameterType="java.util.Map">
         insert into user (username, encrypted_password, avatar, created_at, updated_at)
-        values (#{username}, #{encryptedPassword}, '', now(), now());
+        values (#{username}, #{encryptedPassword}, #{avatar}, #{createdAt}, #{updatedAt});
     </insert>
     <select id="selectUserByUsername" resultType="com.blog.entity.User">
-        select * from user where username = #{username}
+        select *
+        from user
+        where username = #{username}
     </select>
 </mapper>
