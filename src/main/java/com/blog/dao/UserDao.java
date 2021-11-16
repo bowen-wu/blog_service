@@ -1,6 +1,5 @@
 package com.blog.dao;
 
-import com.blog.entity.AuthResponse;
 import com.blog.entity.User;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Component;
@@ -18,5 +17,9 @@ public class UserDao {
 
     public User selectUserById(int id) {
         return this.sqlSession.selectOne("selectUserById", id);
+    }
+
+    public int insertUser(String username, String password) {
+        return this.sqlSession.insert("insertUser", new String[]{username, password});
     }
 }

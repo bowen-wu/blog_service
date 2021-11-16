@@ -1,12 +1,11 @@
 package com.blog.entity;
 
-import sun.jvm.hotspot.oops.Instance;
-
 import java.time.Instant;
 
 public class User {
     Integer id;
     String username;
+    String encryptedPassword;
     String avatar;
     Instant updatedAt;
     Instant createdAt;
@@ -19,12 +18,21 @@ public class User {
         this.createdAt = Instant.now();
     }
 
-    public User(Integer id, String username, String avatar, Instant updatedAt, Instant createdAt) {
+    public User(Integer id, String username, String encryptedPassword, String avatar, Instant updatedAt, Instant createdAt) {
         this.id = id;
         this.username = username;
+        this.encryptedPassword = encryptedPassword;
         this.avatar = avatar;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+    }
+
+    public String getPassword() {
+        return encryptedPassword;
+    }
+
+    public void setPassword(String password) {
+        this.encryptedPassword = password;
     }
 
     public Integer getId() {
