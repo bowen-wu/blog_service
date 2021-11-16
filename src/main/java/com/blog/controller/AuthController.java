@@ -61,4 +61,10 @@ public class AuthController {
         login(params);
         return new AuthResponse(ResponseStatus.ok, "注册成功", false, user);
     }
+
+    @GetMapping("/auth/logout")
+    @ResponseBody
+    public Response logout() {
+        return authService.logout();
+    }
 }

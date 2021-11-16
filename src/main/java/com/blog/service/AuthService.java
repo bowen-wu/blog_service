@@ -58,4 +58,15 @@ public class AuthService {
             return new Response(ResponseStatus.fail, "密码不正确");
         }
     }
+
+    public Response logout() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userDao.getUserByUsername(username);
+        if (user == null) {
+            return new Response(ResponseStatus.fail, "用户尚未登录");
+        } else {
+            SecurityContextHolder.clearContext();
+            return new Response(ResponseStatus.ok, "注销成功");
+        }
+    }
 }
