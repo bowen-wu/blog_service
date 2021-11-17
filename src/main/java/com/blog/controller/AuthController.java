@@ -3,7 +3,6 @@ package com.blog.controller;
 import com.blog.entity.AuthResponse;
 import com.blog.entity.Response;
 import com.blog.entity.User;
-import com.blog.service.AuthService;
 import com.blog.service.UserService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,13 +18,11 @@ import java.util.Map;
 
 @RestController
 public class AuthController {
-    private final AuthService authService;
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Inject
-    public AuthController(AuthService authService, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.authService = authService;
+    public AuthController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -33,13 +30,13 @@ public class AuthController {
     @GetMapping("/auth")
     @ResponseBody
     public AuthResponse auth() {
-        return this.authService.getLoginStatus();
+        return this.userService.getLoginStatus();
     }
 
     @PostMapping("/auth/login")
     @ResponseBody
     public Response login(@RequestBody Map<String, String> params) {
-        return this.authService.login(params.get("username"), params.get("password"));
+        return this.userService.login(params.get("username"), params.get("password"));
     }
 
     @PostMapping("/auth/register")
@@ -71,6 +68,6 @@ public class AuthController {
     @GetMapping("/auth/logout")
     @ResponseBody
     public Response logout() {
-        return authService.logout();
+        return userService.logout();
     }
 }
