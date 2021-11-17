@@ -38,7 +38,8 @@ public class AuthController {
     @GetMapping("/auth")
     @ResponseBody
     public AuthResponse auth() {
-        return this.userService.getLoginStatus();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.userService.getLoginStatus(username);
     }
 
     @PostMapping("/auth/login")
@@ -95,6 +96,7 @@ public class AuthController {
     @GetMapping("/auth/logout")
     @ResponseBody
     public Response logout() {
-        return userService.logout();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.logout(username);
     }
 }

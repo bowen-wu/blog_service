@@ -28,8 +28,7 @@ public class UserService implements UserDetailsService {
         return userDao.getUserByUsername(username);
     }
 
-    public AuthResponse getLoginStatus() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    public AuthResponse getLoginStatus(String username) {
         User user = userDao.getUserByUsername(username);
         if (user == null) {
             return AuthResponse.success("", false, null);
@@ -38,15 +37,13 @@ public class UserService implements UserDetailsService {
         return AuthResponse.success("", true, user);
     }
 
-    public Response logout() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    public Response logout(String username) {
         User user = userDao.getUserByUsername(username);
         if (user == null) {
             return Response.failure("用户尚未登录");
-        } else {
-            SecurityContextHolder.clearContext();
-            return Response.success("注销成功");
         }
+        SecurityContextHolder.clearContext();
+        return Response.success("注销成功");
     }
 
     @Override
