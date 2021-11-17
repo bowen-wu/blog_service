@@ -5,7 +5,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 
 @Component
 public class UserDao {
@@ -16,15 +15,11 @@ public class UserDao {
         this.sqlSession = sqlSession;
     }
 
-    public User selectUserById(int id) {
-        return this.sqlSession.selectOne("selectUserById", id);
-    }
-
     public User getUserByUsername(String username) {
         return this.sqlSession.selectOne("selectUserByUsername", username);
     }
 
-    public int insertUser(User user) {
-        return this.sqlSession.insert("insertUser", user);
+    public void insertUser(User user) {
+        this.sqlSession.insert("insertUser", user);
     }
 }

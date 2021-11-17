@@ -5,6 +5,12 @@ import com.blog.entity.Response;
 import com.blog.entity.User;
 import com.blog.service.UserService;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,13 +24,15 @@ import java.util.Map;
 
 @RestController
 public class AuthController {
-    private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    UserService userService;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+    AuthenticationManager authenticationManager;
 
     @Inject
-    public AuthController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AuthController(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("/auth")
@@ -36,7 +44,26 @@ public class AuthController {
     @PostMapping("/auth/login")
     @ResponseBody
     public Response login(@RequestBody Map<String, String> params) {
-        return this.userService.login(params.get("username"), params.get("password"));
+        String username = params.get("username");
+        String password = params.get("password");
+
+        UserDetails userDetails;
+        try {
+            userDetails = userService.loadUserByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            return Response.failure("用户不存在");
+        }
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+
+        try {
+            authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(token);
+
+            return AuthResponse.success("登录成功", true, userService.getUserByUsername(username));
+        } catch (BadCredentialsException e) {
+            return Response.failure("密码不正确");
+        }
     }
 
     @PostMapping("/auth/register")
