@@ -8,6 +8,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,8 +39,13 @@ public class AuthController {
     @GetMapping("/auth")
     @ResponseBody
     public AuthResponse auth() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return this.userService.getLoginStatus(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUserByUsername(authentication == null ? null : authentication.getName());
+        if (user == null) {
+            return AuthResponse.success("", false, null);
+        }
+
+        return AuthResponse.success("", true, user);
     }
 
     @PostMapping("/auth/login")
@@ -96,7 +102,12 @@ public class AuthController {
     @GetMapping("/auth/logout")
     @ResponseBody
     public Response logout() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userService.logout(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.getUserByUsername(authentication == null ? null : authentication.getName());
+        if (user == null) {
+            return Response.failure("用户尚未登录");
+        }
+        SecurityContextHolder.clearContext();
+        return Response.success("注销成功");
     }
 }

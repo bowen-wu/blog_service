@@ -13,14 +13,6 @@ public class User {
     Instant updatedAt;
     Instant createdAt;
 
-    public User(Integer id, String username) {
-        this.id = id;
-        this.username = username;
-        this.avatar = "";
-        this.updatedAt = Instant.now();
-        this.createdAt = Instant.now();
-    }
-
     public User(Integer id, String username, String encryptedPassword, String avatar, Instant updatedAt, Instant createdAt) {
         this.id = id;
         this.username = username;
