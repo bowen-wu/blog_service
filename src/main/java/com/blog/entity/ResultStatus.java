@@ -1,5 +1,5 @@
 package com.blog.entity;
 
-public enum ResponseStatus {
+public enum ResultStatus {
     ok, fail
 }

@@ -1,7 +1,6 @@
 package com.blog.controller;
 
-import com.blog.entity.AuthResponse;
-import com.blog.entity.Response;
+import com.blog.entity.AuthResult;
 import com.blog.entity.User;
 import com.blog.service.UserService;
 import org.springframework.dao.DuplicateKeyException;
@@ -38,19 +37,19 @@ public class AuthController {
 
     @GetMapping("/auth")
     @ResponseBody
-    public AuthResponse auth() {
+    public AuthResult auth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getUserByUsername(authentication == null ? null : authentication.getName());
         if (user == null) {
-            return AuthResponse.success("", false, null);
+            return AuthResult.success("", false, null);
         }
 
-        return AuthResponse.success("", true, user);
+        return AuthResult.success("", true, user);
     }
 
     @PostMapping("/auth/login")
     @ResponseBody
-    public Response login(@RequestBody Map<String, String> params) {
+    public AuthResult login(@RequestBody Map<String, String> params) {
         String username = params.get("username");
         String password = params.get("password");
 
@@ -58,7 +57,7 @@ public class AuthController {
         try {
             userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return Response.failure("用户不存在");
+            return AuthResult.failure("用户不存在");
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
@@ -67,25 +66,25 @@ public class AuthController {
             authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            return AuthResponse.success("登录成功", true, userService.getUserByUsername(username));
+            return AuthResult.success("登录成功", true, userService.getUserByUsername(username));
         } catch (BadCredentialsException e) {
-            return Response.failure("密码不正确");
+            return AuthResult.failure("密码不正确");
         }
     }
 
     @PostMapping("/auth/register")
     @ResponseBody
-    public Response register(@RequestBody Map<String, String> params) {
+    public AuthResult register(@RequestBody Map<String, String> params) {
         String username = params.get("username");
         String password = params.get("password");
         if (username == null || password == null) {
-            return Response.failure("用户名|密码为空");
+            return AuthResult.failure("用户名|密码为空");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return Response.failure("用户名长度 1 - 15 个字符");
+            return AuthResult.failure("用户名长度 1 - 15 个字符");
         }
         if (password.length() < 6 || password.length() > 16) {
-            return Response.failure("密码长度 6 - 16 个字符");
+            return AuthResult.failure("密码长度 6 - 16 个字符");
         }
 
         try {
@@ -93,21 +92,21 @@ public class AuthController {
             User user = new User(null, username, encodePassword, "", Instant.now(), Instant.now());
             userService.register(user);
             login(params);
-            return AuthResponse.success("注册成功", false, user);
+            return AuthResult.success("注册成功", false, user);
         } catch (DuplicateKeyException e) {
-            return Response.failure("该用户名已经注册");
+            return AuthResult.failure("该用户名已经注册");
         }
     }
 
     @GetMapping("/auth/logout")
     @ResponseBody
-    public Response logout() {
+    public AuthResult logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getUserByUsername(authentication == null ? null : authentication.getName());
         if (user == null) {
-            return Response.failure("用户尚未登录");
+            return AuthResult.failure("用户尚未登录");
         }
         SecurityContextHolder.clearContext();
-        return Response.success("注销成功");
+        return AuthResult.success("注销成功", false);
     }
 }
