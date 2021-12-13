@@ -2,6 +2,8 @@ package com.blog.service;
 
 import com.blog.dao.UserDao;
 import com.blog.entity.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +25,11 @@ public class UserService implements UserDetailsService {
 
     public User getUserByUsername(String username) {
         return userDao.getUserByUsername(username);
+    }
+
+    public User getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication == null ? null : getUserByUsername(authentication.getName());
     }
 
     @Override

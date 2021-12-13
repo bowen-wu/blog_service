@@ -37,4 +37,8 @@ public class BlogDao {
     public int createBlog(Blog blog) {
         return this.sqlSession.insert("createBlog", blog);
     }
+
+    public Integer updateBlog(Blog blog) {
+        return this.sqlSession.update("updateBlog", blog);
+    }
 }

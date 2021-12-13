@@ -4,6 +4,7 @@ import com.blog.dao.BlogDao;
 import com.blog.dao.UserDao;
 import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
+import com.blog.entity.Result;
 import com.blog.entity.ResultStatus;
 import com.blog.entity.User;
 import org.springframework.security.core.Authentication;
@@ -18,13 +19,11 @@ import java.util.List;
 public class BlogService {
     BlogDao blogDao;
     UserDao userDao;
-    UserService userService;
 
     @Inject
-    public BlogService(BlogDao blogDao, UserDao userDao, UserService userService) {
+    public BlogService(BlogDao blogDao, UserDao userDao) {
         this.blogDao = blogDao;
         this.userDao = userDao;
-        this.userService = userService;
     }
 
     public BlogResult getBlogs(Integer page, Integer pageSize, Integer userId) {
@@ -48,13 +47,22 @@ public class BlogService {
         return blog;
     }
 
-    public Blog createBlog(String title, String content, String description) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.getUserByUsername(authentication == null ? null : authentication.getName());
-        if (user == null) {
-            return null;
-        }
-        Integer blogId = blogDao.createBlog(new Blog(null, user.getId(), user, title, content, description, Instant.now(), Instant.now()));
+    public Blog createBlog(Blog blog) {
+        Integer blogId = blogDao.createBlog(blog);
         return getBlogInfoById(blogId);
+    }
+
+    public Result<Blog> updateBlog(Blog blog) {
+        Blog blogInfoById = getBlogInfoById(blog.getId());
+        if (blogInfoById == null) {
+            return Result.failure("博客不存在");
+        }
+        if (!blogInfoById.getUserId().equals(blog.getUserId())) {
+            return Result.failure("无法修改别人的博客");
+        }
+
+        blogDao.updateBlog(blog);
+        Blog updatedBlog = getBlogInfoById(blog.getId());
+        return Result.success("修改成功", updatedBlog);
     }
 }

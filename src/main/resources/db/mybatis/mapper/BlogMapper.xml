@@ -48,4 +48,10 @@
         insert into blog (user_id, title, content, description, created_at, updated_at)
         values (#{userId}, #{title}, #{content}, #{description}, #{createdAt}, #{updatedAt});
     </insert>
+
+    <update id="updateBlog">
+        update blog
+        set content=#{content}, title=#{title}, description=#{description}, updated_at=#{updatedAt}
+        where id = #{id};
+    </update>
 </mapper>

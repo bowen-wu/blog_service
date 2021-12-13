@@ -4,8 +4,12 @@ import com.blog.entity.AuthResult;
 import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
 import com.blog.entity.Result;
+import com.blog.entity.User;
 import com.blog.service.BlogService;
+import com.blog.service.UserService;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,15 +18,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.Map;
 
 @RestController
 public class BlogController {
     BlogService blogService;
+    UserService userService;
 
     @Inject
-    public BlogController(BlogService blogService) {
+    public BlogController(BlogService blogService, UserService userService) {
         this.blogService = blogService;
+        this.userService = userService;
     }
 
     @GetMapping("/blog")
@@ -45,21 +52,46 @@ public class BlogController {
     @PostMapping("/blog")
     @ResponseBody
     public Result<Blog> createBlog(@RequestBody Map<String, String> params) {
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            return Result.success("登录后才能操作", null);
+        }
+
         String title = params.get("title");
         String content = params.get("content");
 
-        if (title == null || title.length() >= 100) {
+        if (!StringUtils.hasText(title) || title.length() >= 100) {
             return Result.failure("博客标题不能为空，且不超过100个字符");
         }
-        if (content == null || content.length() >= 10000) {
+        if (!StringUtils.hasText(content) || content.length() >= 10000) {
             return Result.failure("博客内容不能为空，且不超过10000个字符");
         }
-        String description = params.get("description") == null ? content.substring(0, 20) : params.get("description");
 
-        Blog blog = blogService.createBlog(title, content, description);
-        if (blog == null) {
+        String description = StringUtils.hasText(params.get("description")) ? params.get("description") : content.substring(0, 20);
+
+        Blog blog = blogService.createBlog(new Blog(null, user.getId(), user, title, content, description, Instant.now(), Instant.now()));
+        return Result.success("创建成功", blog);
+    }
+
+    @PatchMapping("/blog/{blogId}")
+    @ResponseBody
+    public Result<Blog> updateBlog(@PathVariable Integer blogId, @RequestBody Map<String, String> params) {
+        User user = userService.getLoggedInUser();
+        if (user == null) {
             return Result.success("登录后才能操作", null);
         }
-        return Result.success("创建成功", blog);
+
+        String title = params.get("title");
+        String content = params.get("content");
+        String description = StringUtils.hasText(params.get("description")) ? params.get("description") : content.substring(0, 20);
+
+        if (!StringUtils.hasText(title) || title.length() >= 100) {
+            return Result.failure("博客标题不能为空，且不超过100个字符");
+        }
+        if (!StringUtils.hasText(content) || content.length() >= 10000) {
+            return Result.failure("博客内容不能为空，且不超过10000个字符");
+        }
+
+        return blogService.updateBlog(new Blog(blogId, user.getId(), user, title, content, description, null, Instant.now()));
     }
 }

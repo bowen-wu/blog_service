@@ -50,4 +50,15 @@ class UserServiceTest {
         Assertions.assertEquals("myEncodedPassword", userDetails.getPassword());
     }
 
+    @Test
+    public void returnNullWhenNotLoggedIn() {
+        User loggedInUser = userService.getLoggedInUser();
+        Assertions.assertNull(loggedInUser);
+    }
+
+    @Test
+    public void returnLoggedInUser() {
+        // TODO: mock SecurityContextHolder.getContext().getAuthentication() return not null
+    }
+
 }
