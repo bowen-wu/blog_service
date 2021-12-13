@@ -39,6 +39,13 @@
     </select>
 
     <select id="selectBlogById" resultType="com.blog.entity.Blog">
-        select * from blog where id = #{blog_id}
+        select *
+        from blog
+        where id = #{blog_id}
     </select>
+
+    <insert id="createBlog">
+        insert into blog (user_id, title, content, description, created_at, updated_at)
+        values (#{userId}, #{title}, #{content}, #{description}, #{createdAt}, #{updatedAt});
+    </insert>
 </mapper>

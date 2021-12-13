@@ -13,13 +13,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.Instant.now;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 public class BlogServiceTest {
@@ -27,6 +31,8 @@ public class BlogServiceTest {
     UserDao mockUserDao;
     @Mock
     BlogDao mockBlogDao;
+    @Mock
+    UserService userService;
     @InjectMocks
     BlogService blogService;
 
@@ -89,5 +95,26 @@ public class BlogServiceTest {
         Mockito.when(mockBlogDao.getBlogInfoById(anyInt())).thenReturn(null);
         Blog blog = blogService.getBlogInfoById(1);
         Assertions.assertNull(blog);
+    }
+
+    @Test
+    public void testCreateBlog() {
+        BlogService spyBlogService = Mockito.spy(blogService);
+        String testUsername = "testUsername";
+        User testUser = new User(1, testUsername, "myEncodedPassword", "", Instant.now(), Instant.now());
+        Mockito.when(userService.getUserByUsername(any())).thenReturn(testUser);
+        Mockito.when(mockBlogDao.createBlog(any())).thenReturn(123);
+
+        spyBlogService.createBlog("title", "content", "description");
+
+        Mockito.verify(spyBlogService).getBlogInfoById(123);
+    }
+
+    @Test
+    public void returnNullWhenNotLoggedIn() {
+        Mockito.when(userService.getUserByUsername(any())).thenReturn(null);
+        Blog blog = blogService.createBlog("title", "content", "description");
+        Assertions.assertNull(blog);
+        Mockito.verify(mockBlogDao, never()).createBlog(any());
     }
 }

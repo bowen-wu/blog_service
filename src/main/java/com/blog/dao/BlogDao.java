@@ -33,4 +33,8 @@ public class BlogDao {
     public Blog getBlogInfoById(Integer blogId) {
         return this.sqlSession.selectOne("selectBlogById", blogId);
     }
+
+    public int createBlog(Blog blog) {
+        return this.sqlSession.insert("createBlog", blog);
+    }
 }
