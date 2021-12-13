@@ -1,9 +1,18 @@
 package com.blog.entity;
 
-public abstract class Result<T> {
+public class Result<T> {
     ResultStatus status;
     String msg;
     T data;
+
+
+    public static <R> Result<R> success(String msg, R data) {
+        return new Result<>(ResultStatus.ok, msg, data);
+    }
+
+    public static <R> Result<R> failure(String msg) {
+        return new Result<>(ResultStatus.fail, msg, null);
+    }
 
     protected Result(ResultStatus status, String msg, T data) {
         this.status = status;

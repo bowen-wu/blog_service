@@ -1,8 +1,11 @@
 package com.blog.controller;
 
+import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
+import com.blog.entity.Result;
 import com.blog.service.BlogService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,5 +26,15 @@ public class BlogController {
     public BlogResult getBlogs(@RequestParam("page") Integer page, @RequestParam(value = "userId", required = false) Integer userId) {
         int pageSize = 10;
         return blogService.getBlogs(page, pageSize, userId);
+    }
+
+    @GetMapping("/blog/{blogId}")
+    @ResponseBody
+    public Result<Blog> getBlogInfoById(@PathVariable Integer blogId) {
+        Blog blogInfoById = blogService.getBlogInfoById(blogId);
+        if(blogInfoById == null) {
+            return Result.success("系统异常", null);
+        }
+        return Result.success("获取成功", blogInfoById);
     }
 }

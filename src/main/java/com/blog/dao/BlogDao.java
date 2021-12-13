@@ -29,4 +29,8 @@ public class BlogDao {
     public int getBlogCount(Integer userId) {
         return this.sqlSession.selectOne("selectBlogCount", userId);
     }
+
+    public Blog getBlogInfoById(Integer blogId) {
+        return this.sqlSession.selectOne("selectBlogById", blogId);
+    }
 }

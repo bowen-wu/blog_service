@@ -1,6 +1,7 @@
 package com.blog.service;
 
 import com.blog.dao.BlogDao;
+import com.blog.dao.UserDao;
 import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
 import com.blog.entity.ResultStatus;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 
 @ExtendWith(MockitoExtension.class)
 public class BlogServiceTest {
+    @Mock
+    UserDao mockUserDao;
     @Mock
     BlogDao mockBlogDao;
     @InjectMocks
@@ -63,5 +67,27 @@ public class BlogServiceTest {
         Assertions.assertEquals(1, blogs.getPage());
         Assertions.assertEquals(21, blogs.getTotal());
         Assertions.assertEquals(3, blogs.getTotalPage());
+    }
+
+    @Test
+    public void getBlogInfoByIdFromDB() {
+        User testUser = new User(1, "testUser", "", "", Instant.now(), Instant.now());
+        Blog mockBlog = new Blog();
+        mockBlog.setUserId(123);
+        mockBlog.setUser(testUser);
+        Mockito.when(mockBlogDao.getBlogInfoById(anyInt())).thenReturn(mockBlog);
+        Mockito.when(mockUserDao.getUserById(123)).thenReturn(testUser);
+
+        Blog blog = blogService.getBlogInfoById(1);
+        Mockito.verify(mockBlogDao).getBlogInfoById(1);
+        Mockito.verify(mockUserDao).getUserById(123);
+        Assertions.assertEquals(blog, mockBlog);
+    }
+
+    @Test
+    public void returnNullWhenBlogIdIsNotPresent() {
+        Mockito.when(mockBlogDao.getBlogInfoById(anyInt())).thenReturn(null);
+        Blog blog = blogService.getBlogInfoById(1);
+        Assertions.assertNull(blog);
     }
 }

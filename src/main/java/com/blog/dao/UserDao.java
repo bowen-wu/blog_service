@@ -19,6 +19,10 @@ public class UserDao {
         return this.sqlSession.selectOne("selectUserByUsername", username);
     }
 
+    public User getUserById(Integer userId) {
+        return this.sqlSession.selectOne("selectUserById", userId);
+    }
+
     public void insertUser(User user) {
         this.sqlSession.insert("insertUser", user);
     }

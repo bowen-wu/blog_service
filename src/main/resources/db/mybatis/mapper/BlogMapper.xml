@@ -37,4 +37,8 @@
             where user_id = #{user_id}
         </if>
     </select>
+
+    <select id="selectBlogById" resultType="com.blog.entity.Blog">
+        select * from blog where id = #{blog_id}
+    </select>
 </mapper>
