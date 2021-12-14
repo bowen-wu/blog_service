@@ -112,10 +112,13 @@ public class BlogServiceTest {
 
     @Test
     public void blogIsNotPresentWhenUpdateBlog() {
+        String testUsername = "testUsername";
+        User testUser = new User(1, testUsername, "myEncodedPassword", "", Instant.now(), Instant.now());
+        Blog testBlog = new Blog(1, 1, testUser, "title1", "content1", "description1", now(), now());
         BlogService spyBlogService = Mockito.spy(blogService);
-        Mockito.lenient().when(spyBlogService.getBlogInfoById(anyInt())).thenReturn(null);
+        Mockito.when(spyBlogService.getBlogInfoById(testBlog.getId())).thenReturn(null);
 
-        Result<Blog> blogResult = spyBlogService.updateBlog(new Blog());
+        Result<Blog> blogResult = spyBlogService.updateBlog(testBlog);
 
         Assertions.assertEquals(blogResult.getStatus(), ResultStatus.fail);
         Assertions.assertTrue(blogResult.getMsg().contains("博客不存在"));
@@ -127,8 +130,7 @@ public class BlogServiceTest {
         User testUser = new User(1, testUsername, "myEncodedPassword", "", Instant.now(), Instant.now());
         BlogService spyBlogService = Mockito.spy(blogService);
         Blog testBlog = new Blog(1, 1, testUser, "title1", "content1", "description1", now(), now());
-        Mockito.lenient().when(mockBlogDao.getBlogInfoById(testBlog.getId())).thenReturn(testBlog);
-        Mockito.lenient().when(spyBlogService.getBlogInfoById(anyInt())).thenReturn(testBlog);
+        Mockito.when(spyBlogService.getBlogInfoById(testBlog.getId())).thenReturn(testBlog);
 
         Result<Blog> blogResult = spyBlogService.updateBlog(new Blog(1, 11, testUser, "title1", "content1", "description1", now(), now()));
 
@@ -142,16 +144,62 @@ public class BlogServiceTest {
         User testUser = new User(1, testUsername, "myEncodedPassword", "", Instant.now(), Instant.now());
         BlogService spyBlogService = Mockito.spy(blogService);
         Blog testBlog = new Blog(111, 1, testUser, "title1", "content1", "description1", now(), now());
-        Mockito.lenient().when(mockBlogDao.getBlogInfoById(testBlog.getId())).thenReturn(testBlog);
-        Mockito.lenient().when(spyBlogService.getBlogInfoById(anyInt())).thenReturn(testBlog);
+        Mockito.when(spyBlogService.getBlogInfoById(testBlog.getId())).thenReturn(testBlog);
 
         Result<Blog> blogResult = blogService.updateBlog(testBlog);
 
         Mockito.verify(mockBlogDao).updateBlog(testBlog);
-        // TODO: 
-//        Mockito.verify(spyBlogService).getBlogInfoById(testBlog.getId());
+        Mockito.verify(spyBlogService).getBlogInfoById(testBlog.getId());
 
         Assertions.assertEquals(blogResult.getStatus(), ResultStatus.ok);
         Assertions.assertTrue(blogResult.getMsg().contains("修改成功"));
+    }
+
+    @Test
+    public void blogIsNotPresentWhenDeleteBlog() {
+        Integer deleteBlogId = 1;
+        User testUser = new User(1, "testUsername", "myEncodedPassword", "", Instant.now(), Instant.now());
+        BlogService spyBlogService = Mockito.spy(blogService);
+        Mockito.lenient().when(spyBlogService.getBlogInfoById(deleteBlogId)).thenReturn(null);
+
+        Result<Blog> blogResult = spyBlogService.deleteBlog(deleteBlogId, testUser);
+
+        Assertions.assertEquals(blogResult.getStatus(), ResultStatus.fail);
+        Assertions.assertTrue(blogResult.getMsg().contains("博客不存在"));
+    }
+
+    @Test
+    public void permissionDeniedDeleteBlog() {
+        Integer deleteBlogId = 1;
+        User testUser = new User(111, "testUsername", "myEncodedPassword", "", Instant.now(), Instant.now());
+        BlogService spyBlogService = Mockito.spy(blogService);
+
+        User blogUser = new User(1, "testUsername", "myEncodedPassword", "", Instant.now(), Instant.now());
+        Blog testBlog = new Blog(1, 1, blogUser, "title1", "content1", "description1", now(), now());
+
+        Mockito.when(spyBlogService.getBlogInfoById(deleteBlogId)).thenReturn(testBlog);
+
+        Result<Blog> blogResult = spyBlogService.deleteBlog(deleteBlogId, testUser);
+
+        Assertions.assertEquals(blogResult.getStatus(), ResultStatus.fail);
+        Assertions.assertTrue(blogResult.getMsg().contains("无法删除别人的博客"));
+    }
+
+    @Test
+    public void deleteBlog() {
+        String testUsername = "testUsername";
+        User testUser = new User(1, testUsername, "myEncodedPassword", "", Instant.now(), Instant.now());
+        BlogService spyBlogService = Mockito.spy(blogService);
+        Blog testBlog = new Blog(111, 1, testUser, "title1", "content1", "description1", now(), now());
+        Mockito.when(spyBlogService.getBlogInfoById(testBlog.getId())).thenReturn(testBlog);
+
+        Result<Blog> blogResult = blogService.deleteBlog(testBlog.getId(), testUser);
+
+        Mockito.verify(spyBlogService).getBlogInfoById(testBlog.getId());
+        Mockito.verify(mockBlogDao).deleteBlog(testBlog.getId());
+
+        Assertions.assertEquals(blogResult.getStatus(), ResultStatus.ok);
+        Assertions.assertTrue(blogResult.getMsg().contains("删除成功"));
+
     }
 }

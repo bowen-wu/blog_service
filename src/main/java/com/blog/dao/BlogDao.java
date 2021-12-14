@@ -41,4 +41,8 @@ public class BlogDao {
     public Integer updateBlog(Blog blog) {
         return this.sqlSession.update("updateBlog", blog);
     }
+
+    public int deleteBlog(Integer blogId) {
+        return this.sqlSession.delete("deleteBlog", blogId);
+    }
 }

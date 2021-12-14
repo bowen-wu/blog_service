@@ -51,7 +51,16 @@
 
     <update id="updateBlog">
         update blog
-        set content=#{content}, title=#{title}, description=#{description}, updated_at=#{updatedAt}
+        set content=#{content},
+            title=#{title},
+            description=#{description},
+            updated_at=#{updatedAt}
         where id = #{id};
     </update>
+
+    <delete id="deleteBlog">
+        delete
+        from blog
+        where id = #{blogId}
+    </delete>
 </mapper>

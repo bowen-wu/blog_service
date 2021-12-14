@@ -65,4 +65,17 @@ public class BlogService {
         Blog updatedBlog = getBlogInfoById(blog.getId());
         return Result.success("修改成功", updatedBlog);
     }
+
+    public Result<Blog> deleteBlog(Integer blogId, User loggedInUser) {
+        Blog blogInfoById = getBlogInfoById(blogId);
+        if (blogInfoById == null) {
+            return Result.failure("博客不存在");
+        }
+        if (!blogInfoById.getUserId().equals(loggedInUser.getId())) {
+            return Result.failure("无法删除别人的博客");
+        }
+
+        blogDao.deleteBlog(blogId);
+        return Result.success("删除成功", null);
+    }
 }

@@ -1,6 +1,5 @@
 package com.blog.controller;
 
-import com.blog.entity.AuthResult;
 import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
 import com.blog.entity.Result;
@@ -8,6 +7,7 @@ import com.blog.entity.User;
 import com.blog.service.BlogService;
 import com.blog.service.UserService;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -93,5 +93,15 @@ public class BlogController {
         }
 
         return blogService.updateBlog(new Blog(blogId, user.getId(), user, title, content, description, null, Instant.now()));
+    }
+
+    @DeleteMapping("/blog/{blogId}")
+    @ResponseBody
+    public Result<Blog> deleteBlog(@PathVariable Integer blogId) {
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            return Result.success("登录后才能操作", null);
+        }
+        return blogService.deleteBlog(blogId, user);
     }
 }
