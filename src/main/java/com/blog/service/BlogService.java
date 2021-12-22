@@ -5,14 +5,10 @@ import com.blog.dao.UserDao;
 import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
 import com.blog.entity.Result;
-import com.blog.entity.ResultStatus;
 import com.blog.entity.User;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.time.Instant;
 import java.util.List;
 
 @Service
