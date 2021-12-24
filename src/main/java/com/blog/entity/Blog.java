@@ -1,9 +1,11 @@
 package com.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.time.Instant;
 
+@SuppressFBWarnings("EI_EXPOSE_REP")
 public class Blog {
     private Integer id;
     @JsonIgnore

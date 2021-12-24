@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>temp</h1>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js"></script>
+<video id="videoElement" height="600" width="600" oncontextmenu="return false"></video>
+<script>
+  if (flvjs.isSupported()) {
+    var videoElement = document.getElementById('videoElement');
+    var flvPlayer = flvjs.createPlayer({
+      isLive: true,
+      type: 'flv',
+      url: 'ws://10.40.152.162:8090/rtp/0BEBC9F6.flv?st=1640245783385'
+    });
+    flvPlayer.attachMediaElement(videoElement);
+    flvPlayer.load();
+    flvPlayer.play();
+  }
+</script>
+</body>
+</html>

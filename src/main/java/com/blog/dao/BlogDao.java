@@ -1,6 +1,7 @@
 package com.blog.dao;
 
 import com.blog.entity.Blog;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class BlogDao {
     private final SqlSession sqlSession;
 

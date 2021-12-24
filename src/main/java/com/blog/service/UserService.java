@@ -2,6 +2,7 @@ package com.blog.service;
 
 import com.blog.dao.UserDao;
 import com.blog.entity.User;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class UserService implements UserDetailsService {
     UserDao userDao;
 

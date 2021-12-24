@@ -6,12 +6,14 @@ import com.blog.entity.Blog;
 import com.blog.entity.BlogResult;
 import com.blog.entity.Result;
 import com.blog.entity.User;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.List;
 
 @Service
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class BlogService {
     BlogDao blogDao;
     UserDao userDao;

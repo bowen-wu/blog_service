@@ -6,6 +6,7 @@ import com.blog.entity.Result;
 import com.blog.entity.User;
 import com.blog.service.BlogService;
 import com.blog.service.UserService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class BlogController {
     BlogService blogService;
     UserService userService;
