@@ -7,6 +7,9 @@ public class BlogResult extends Result<List<Blog>> {
     private int page;
     private int totalPage;
 
+    public BlogResult() {
+    }
+
     public static BlogResult success(String msg, List<Blog> data, int total, int page, int totalPage) {
         return new BlogResult(ResultStatus.ok, msg, data, total, page, totalPage);
     }

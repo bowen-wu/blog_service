@@ -69,11 +69,12 @@ public class BlogController {
             return Result.failure("博客内容不能为空，且不超过10000个字符");
         }
 
-        String description = StringUtils.hasText(params.get("description")) ? params.get("description") : content.substring(0, 20);
+        String description = getDescription(params.get("description"), content);
 
         Blog blog = blogService.createBlog(new Blog(null, user.getId(), user, title, content, description, Instant.now(), Instant.now()));
         return Result.success("创建成功", blog);
     }
+
 
     @PatchMapping("/blog/{blogId}")
     @ResponseBody
@@ -85,7 +86,7 @@ public class BlogController {
 
         String title = params.get("title");
         String content = params.get("content");
-        String description = StringUtils.hasText(params.get("description")) ? params.get("description") : content.substring(0, 20);
+        String description = getDescription(params.get("description"), content);
 
         if (!StringUtils.hasText(title) || title.length() >= 100) {
             return Result.failure("博客标题不能为空，且不超过100个字符");
@@ -105,5 +106,15 @@ public class BlogController {
             return Result.success("登录后才能操作", null);
         }
         return blogService.deleteBlog(blogId, user);
+    }
+
+    private String getDescription(String description, String content) {
+        if (StringUtils.hasText(description)) {
+            return description;
+        }
+        if (content.length() <= 20) {
+            return content;
+        }
+        return content.substring(0, 20);
     }
 }

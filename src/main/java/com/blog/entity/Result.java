@@ -5,6 +5,8 @@ public class Result<T> {
     String msg;
     T data;
 
+    public Result() {
+    }
 
     public static <R> Result<R> success(String msg, R data) {
         return new Result<>(ResultStatus.ok, msg, data);
